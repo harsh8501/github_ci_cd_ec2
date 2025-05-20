@@ -1,0 +1,41 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to EC2
+        if: success()
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ubuntu
+            if [ -d "github_ci_cd_ec2" ]; then
+              cd github_ci_cd_ec2
+              git pull
+            else
+              git clone https://github.com/harsh8501/github_ci_cd_ec2.git
+              cd github_ci_cd_ec2
+            fi
+            npm install
+            pm2 restart index.js || pm2 start index.js
