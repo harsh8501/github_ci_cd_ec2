@@ -4,7 +4,7 @@ const http = require('http');
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello,  CI/CD World!\n');
+  res.end('Hello,  CI/CD World check!\n');
 });
 
 server.listen(3000, () => {
